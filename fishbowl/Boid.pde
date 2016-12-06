@@ -135,13 +135,13 @@ class Boid{
     acceleration.add(PVector.mult(myMovement(), weight_madness));
     velocity.add(acceleration);
     /*get dist btwn nearest and self*/
-    //dist -= (bounding_rad + nearest.bounding_rad);
     velocity.limit(maxSpeed);
     
     PVector tentative_pos = PVector.add(position,velocity);
     float dist = nearest == null ? 99999 : nearest.position.dist(tentative_pos);
+    //dist -= (bounding_rad*frame.scaling() + nearest.bounding_rad);
     /*Possible collision, try to avoid it*/
-    if(dist < 2.f*bounding_rad && nearest != null){
+    if(dist < 2.f*bounding_rad*frame.scaling() && nearest != null){
       PVector diff = PVector.sub(tentative_pos, nearest.position);
       diff.normalize();
       position.add(diff);
@@ -265,6 +265,10 @@ class Boid{
     }  
   }
   
+  // check if this boid's frame is the avatar
+  boolean isAvatar() {
+    return scene.avatar() == null ? false : scene.avatar().equals(frame) ? true : false;
+  }
   
   
   void render() {
@@ -277,9 +281,14 @@ class Boid{
     frame.setRotation(quat);
 
     // Multiply matrix to get in the frame coordinate system.
-    pushMatrix();
+    pushMatrix();  
     frame.applyTransformation();
-    shape(s);
+    // setAvatar according to scene.motionAgent().inputGrabber()
+    if (frame.grabsInput()){       
+      if (!isAvatar())
+        scene.setAvatar(frame);
+    }
+    shape(s);    
     popMatrix();
   }
   

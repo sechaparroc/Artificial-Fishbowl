@@ -6,6 +6,7 @@ ArrayList<PVector> deformed_vertices = new ArrayList<PVector>();
 Vec r_center;
 Vec[] r_bounds;
 float scale_factor = 0.15;
+
 //---------------------------------------------
 
 //CONTROL POINTS-------------------------------
@@ -21,32 +22,12 @@ PShape updateShape(Fish agent){
 
   //apply texture
   sh = applyTexture(sh);
-
   sh.rotateX(PI);
   sh.rotateY(3*PI/2);  
   //aux_fish.s.rotateZ(-PI/2);
   //scale the shape to occupy as much the 10% of the width
-  float sw = max(r_bounds[1].x() - r_bounds[0].x(), r_bounds[1].y() - r_bounds[0].y());
-  sw = max(sw, r_bounds[1].z() - r_bounds[0].z());
-  float sw_percent = sw*1./r_world.x();
-  if(sw_percent > scale_factor){
-    float new_w = scale_factor* sw / sw_percent;
-    sh.scale((1.*new_w/r_world.x()));    
-  }
-  //USED FOR AGENT PURPOSES
-  float h = r_bounds[1].y() - r_bounds[0].y();
-  float w = r_bounds[1].x() - r_bounds[0].x();
-  float l = r_bounds[1].z() - r_bounds[0].z();
-  agent.h = h;
-  agent.w = w;
-  agent.l = l;
-  min_h = min_h < h ? min_h: h;
-  min_l = min_l < l ? min_l: l;
-  min_w = min_w < w ? min_w: w;
-  max_h = max_h > h ? max_h: h;
-  max_l = max_l > l ? max_l: l;
-  max_w = max_w > w ? max_w: w;
-  //-----------------------
+  float new_sc = agent.boid.frame.scaling()*agent.l/(r_bounds[1].z() - r_bounds[0].z());
+  agent.boid.frame.setScaling(new_sc);
   return sh;
 }
 
@@ -80,24 +61,42 @@ PShape applyDeformation(Fish agent){
   //morphTransformationAction();
   //apply texture
   deformed_figure = applyTexture(deformed_figure);
-
+  agent.base_model = r;
   deformed_figure.rotateX(PI);
-  deformed_figure.rotateY(3*PI/2);  
+  deformed_figure.rotateY(3*PI/2.f);
+  return deformed_figure;
+}
 
-  //aux_fish.s.rotateZ(-PI/2);
-  //scale_factor = random(0.03,0.1);
-  //scale the shape to occupy as much the 10% of the width
+
+
+Boid generateBoid(int x, int y, int z, PShape p, Fish agent){
+  InteractiveFrame f = new InteractiveFrame(scene);
+  f.setPosition(x,y,z);
+  f.setTrackingEyeAzimuth(-PApplet.HALF_PI);
+  f.setTrackingEyeInclination(PApplet.PI*(4/5));
+  f.setTrackingEyeDistance(scene.radius()*10);
+
+  //USED FOR AGENT PURPOSES
+  float h = (r_bounds[1].y() - r_bounds[0].y());
+  float w = (r_bounds[1].x() - r_bounds[0].x());
+  float l = (r_bounds[1].z() - r_bounds[0].z());
+
+  float bounding_rad = h > l ? h : l;
+  bounding_rad = w > bounding_rad ? w : bounding_rad;    
+  bounding_rad = bounding_rad*1.f/2.f;
+
+  Boid aux_fish = new Boid( new PVector(x,y,z), bounding_rad);
+  aux_fish.frame = f;
+  aux_fish.s = p;
+  /*Scale*/
   float sw = max(r_bounds[1].x() - r_bounds[0].x(), r_bounds[1].y() - r_bounds[0].y());
   sw = max(sw, r_bounds[1].z() - r_bounds[0].z());
   float sw_percent = sw*1./r_world.x();
   if(sw_percent > scale_factor){
     float new_w = scale_factor / sw_percent;
-    deformed_figure.scale((1.*new_w));    
+    f.scale(1.*new_w);
   }
-  //USED FOR AGENT PURPOSES
-  float h = (r_bounds[1].y() - r_bounds[0].y())*((scale_factor* sw / sw_percent)/r_world.x());
-  float w = (r_bounds[1].x() - r_bounds[0].x())*((scale_factor* sw / sw_percent)/r_world.x());
-  float l = (r_bounds[1].z() - r_bounds[0].z())*((scale_factor* sw / sw_percent)/r_world.x());
+  
   agent.h = h;
   agent.w = w;
   agent.l = l;
@@ -107,18 +106,7 @@ PShape applyDeformation(Fish agent){
   max_h = max_h > h ? max_h: h;
   max_l = max_l > l ? max_l: l;
   max_w = max_w > w ? max_w: w;
-  agent.base_model = r;
-  //-----------------------
   
-  return deformed_figure;
-}
-
-Boid generateBoid(int x, int y, int z, PShape p, float bounding_rad){
-  InteractiveFrame f = new InteractiveFrame(scene);
-  f.translate(x,y,z);
-  Boid aux_fish = new Boid( new PVector(x,y,z), bounding_rad);
-  aux_fish.frame = f;
-  aux_fish.s = p;
   return aux_fish;
 }
 

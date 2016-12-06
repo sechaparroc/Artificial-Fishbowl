@@ -1,7 +1,7 @@
-//In this case we're gonna take the same happiness function of the Fish class as the fitness function
-
 /*
-  Here the idea is to optimize the fitness function considering as variables: the Size, the shape and the color
+Here the idea is to optimize the fitness function considering as variables: the Size, the shape and the color.
+We're gonna take the same happiness function of the Fish class as the fitness function, this will lead to homogenize the population.
+Performance is slow due to the high number of executions of TuringMorph algorithm 
 */
 
 public void  executeGA(){
@@ -27,13 +27,13 @@ public void  executeGA(){
     }
     agents.clear();
     for(i = 0; i < population.size(); i++){   
-      println("ITERACION : " + i);
+      println("ITERATION : " + i);
 
       //select 2 agents 
       int i1 = roulette(fitness);
       int i2 = roulette(fitness);      
-      println("PADRE 1 : " + i1);
-      println("PADRE 2 : " + i2);
+      println("PARENT 1 : " + i1);
+      println("PARENT 2 : " + i2);
 
       Fish parent_a = population.get(i1);
       Fish parent_b = population.get(i2);
@@ -50,7 +50,7 @@ public void  executeGA(){
     population.clear();
     for(Fish p : new_population) population.add(p);
   }
-  print("AHORA SE ACTUALIZA " + new_population.length);
+  print("NOW UPDATING " + new_population.length);
   updateGA();
 }
 
@@ -71,7 +71,9 @@ public Fish crossover(Fish f1, Fish f2){
   Fish f = new Fish(id++);
   f.c1 = f1.c1; f.c2 = f1.c2;
   f.Da = f1.Da; f.Db = f1.Db; f.pa = f1.pa; f.pb = f1.pb;
-  f.l = f2.l; f.w = f2.w; f.h = f2.l;
+  f.l = f2.l; 
+  f.w = f2.w; 
+  f.h = f2.h;
   f.base_model = f2.base_model;
   f.boid = f2.boid;
   return f;
@@ -83,7 +85,7 @@ public Fish mutation(Fish fi){
   f.c1 = fi.c1;
   f.c2 = fi.c2;  
   f.Da = fi.Da; f.Db = fi.Db; f.pa = fi.pa; f.pb = fi.pb;
-  f.l = fi.l; f.w = fi.w; f.h = fi.l;
+  f.l = fi.l; f.w = fi.w; f.h = fi.h;
   f.base_model = fi.base_model;
   f.boid = fi.boid; 
   int r_aux, g_aux, b_aux;
@@ -110,8 +112,6 @@ public Fish mutation(Fish fi){
   if(random(1) <= p) f.pa = random(11,14);//decay rate of a
   if(random(1) <= p) f.pb = f.pa*random(1.5,4);//decay rate of b
   
-  //float h, w, l;
-  //int base_model;
   return f;
 }
 
@@ -126,7 +126,7 @@ void updateGA(){
     float bounding_rad = f.h > f.l ? f.h : f.l;
     bounding_rad = f.w > bounding_rad ? f.w : bounding_rad;    
     bounding_rad = bounding_rad*1.f/2.f;    
-    f.boid = generateBoid((int)random(0,r_world.x() - 100), (int)random(0,r_world.y() - 100), (int)random(0,r_world.z() - 100),f.boid.s, bounding_rad);
+    f.boid = generateBoid((int)random(0,r_world.x() - 100), (int)random(0,r_world.y() - 100), (int)random(0,r_world.z() - 100),f.boid.s, f);
     print("SALE 3");    
     f.boid.boids = new ArrayList<Boid>();
     f.boid.boids.add(f.boid);
