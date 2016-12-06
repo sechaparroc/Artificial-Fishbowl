@@ -1,48 +1,41 @@
 /*Global max and min info*/
 float max_c1_diff = abs(color(255,255,255) - color(0,0,0));
 float max_c2_diff = max_c1_diff;
-float max_c = -9999;
-float min_c =  9999;
-float max_Da = -9999;
-float max_Db = -9999;
-float max_pa = -9999;
-float max_pb = -9999;
-float min_h =  9999;
-float min_l =  9999;
-float min_w =  9999;
-float max_h = -9999;
-float max_l = -9999;
-float max_w = -9999;
+float max_c = -9999;   float min_c =  9999;
+float max_Da = -9999;  float max_Db = -9999;
+float max_pa = -9999;  float max_pb = -9999;
+float min_h =  9999;  float min_l =  9999;
+float min_w =  9999;  float max_h = -9999;
+float max_l = -9999;  float max_w = -9999;
 boolean DISABLE_VISION = true;
 //-----------------------------------------------
 //-----------------------------------------------
-
 public class Fish{
+  public Fish(int id){
+    this.id = id;
+  }
+  int id;
   color c1, c2;
   float Da, Db, pa, pb;
   float h, w, l;
   int base_model;
-  //Future work, if computation is not to heavy -.-
   ArrayList<PVector> control_points = new ArrayList<PVector>();
   float happiness;
-  float fitness_res;
   float rate_rad = 3000000;//if we're gonna evolve ommite rate_rad else 200
   PVector vision_rad;
   Boid boid;
   PVector center;
   Fish most_similar = null;
-
+  boolean finish = false;
   float getHappiness(){
       //just check for 10 neighbors, if its not too slow check for all
-      float calc = 0;
       float most_sim = -9999;
-      int num_neighbors = 0;
-      for(Fish f : agents){
+      for(int i = 0; i < agents.size(); i++){
+        Fish f = agents.get(i);
         //if(num_neighbors == 10) break;
         if(f == this) continue;
         //calculate Weight 1        
         if(isInMyVision(f)){
-          println("entraaaa");
           //Color difference: Weight 15%
           //distance = 3 * |dR| + 4 * |dG| + 3 * |dB|
           /*float d_r = (abs(red(c1) - red(f.c1))/255.);
@@ -69,11 +62,8 @@ public class Fish{
             most_sim = sim;
             most_similar = f;
           }
-          calc += sim; 
         }
-        num_neighbors++;
       }
-      //return calc*1./num_neighbors;
       return most_sim;      
   }  
 
@@ -115,7 +105,6 @@ public class Fish{
   
   float fitness(){
       float val = phi(boid.boids.size(), 10, 3);
-      println("valor : " + val);
       return val;
   }
 
@@ -124,12 +113,14 @@ public class Fish{
   void joinToFlock(){
     if(most_similar == null) return;
     //join to the most similar in the current iteration
-    float prop = boid.boids.size()*1./(boid.boids.size() + most_similar.boid.boids.size()); 
+    float prop = boid.boids.size()*1./(boid.boids.size() + most_similar.boid.boids.size());
+    
+    if(finish) return;
     for(int i = 0; i < this.boid.boids.size(); i++){
       most_similar.boid.boids.add(boid.boids.get(i));
     }
     this.boid.boids = most_similar.boid.boids; 
-    Fish f = new Fish();
+    Fish f = new Fish(id++);
     //calculate avg properties
     f.c1 = (int)((1-prop)*1.*most_similar.c1 + (prop)*1.*c1);
     f.c2 = (int)((1-prop)*1.*most_similar.c2 + (prop)*1.*c2);
@@ -143,8 +134,10 @@ public class Fish{
     f.base_model = prop >= 0.5 ? base_model : most_similar.base_model;
     f.boid = boid;
     //remove one of this instances
-    agents.remove(most_similar);
-    agents.remove(this);
+    agents.remove(most_similar);     
+    agents.remove(this);    
+    this.finish = true;
+    most_similar.finish = true;
     agents.add(f);    
     f.updateVision();
   }
@@ -164,14 +157,8 @@ public class Fish{
   }
   
   public void run(){
-    int counter = 100;
-    int finish = 0;
-    //while(true){
-      float calc = getHappiness();
-      if(calc >= 0.9)
-        joinToFlock();
-      if(calc != -9999) println(calc);
-      finish++;
-    //}
+    float calc = getHappiness();
+    if(calc >= 0.9)
+      joinToFlock();
   }
 }

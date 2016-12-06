@@ -1,5 +1,9 @@
 //In this case we're gonna take the same happiness function of the Fish class as the fitness function
 
+/*
+  Here the idea is to optimize the fitness function considering as variables: the Size, the shape and the color
+*/
+
 public void  executeGA(){
   //1. Evaluate fitness for each agent in th population
   float fitness[] = new float[population.size()];
@@ -9,16 +13,17 @@ public void  executeGA(){
     for(int i = 0; i < agents.size(); i++){
       agents.get(i).run();
     }
-    float max_f = -9999;
+    float max_f = -9999, total_f = 0;
     int i = 0;
     for(Fish f : population){
       fitness[i] = f.fitness();
       max_f = fitness[i] > max_f ? fitness[i] : max_f;
+      total_f += fitness[i];
       i++;
     }
     //normalize 
     for(i = 0; i < fitness.length; i++){
-      fitness[i] = fitness[i]*1./(max_f*fitness.length);
+      fitness[i] = fitness[i]*1./(total_f);
     }
     agents.clear();
     for(i = 0; i < population.size(); i++){   
@@ -45,6 +50,7 @@ public void  executeGA(){
     population.clear();
     for(Fish p : new_population) population.add(p);
   }
+  print("AHORA SE ACTUALIZA " + new_population.length);
   updateGA();
 }
 
@@ -62,7 +68,7 @@ public int roulette(float[] fitness){
 
 
 public Fish crossover(Fish f1, Fish f2){
-  Fish f = new Fish();
+  Fish f = new Fish(id++);
   f.c1 = f1.c1; f.c2 = f1.c2;
   f.Da = f1.Da; f.Db = f1.Db; f.pa = f1.pa; f.pb = f1.pb;
   f.l = f2.l; f.w = f2.w; f.h = f2.l;
@@ -73,7 +79,7 @@ public Fish crossover(Fish f1, Fish f2){
 
 public Fish mutation(Fish fi){
   float p = 0.05;
-  Fish f = new Fish();
+  Fish f = new Fish(id++);
   f.c1 = fi.c1;
   f.c2 = fi.c2;  
   f.Da = fi.Da; f.Db = fi.Db; f.pa = fi.pa; f.pb = fi.pb;
@@ -112,13 +118,21 @@ public Fish mutation(Fish fi){
 void updateGA(){
   //actualize turing morph and parameters to render the agents
   flock.clear();
+  print("Flock " + agents.size());
   for(Fish f : agents){    
     last_texture = execute(true, true, f);        
+    print("SALE 2");
     f.boid.s = updateShape(f);
-    f.boid = generateBoid((int)random(0,r_world.x() - 100), (int)random(0,r_world.y() - 100), (int)random(0,r_world.z() - 100),f.boid.s);    
+    float bounding_rad = f.h > f.l ? f.h : f.l;
+    bounding_rad = f.w > bounding_rad ? f.w : bounding_rad;    
+    bounding_rad = bounding_rad*1.f/2.f;    
+    f.boid = generateBoid((int)random(0,r_world.x() - 100), (int)random(0,r_world.y() - 100), (int)random(0,r_world.z() - 100),f.boid.s, bounding_rad);
+    print("SALE 3");    
     f.boid.boids = new ArrayList<Boid>();
     f.boid.boids.add(f.boid);
     flock.add(f.boid);
     f.updateVision();
-  }
+    print("SALE 1");
+}
+  print("SALE");
 }

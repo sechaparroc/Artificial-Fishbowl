@@ -5,26 +5,28 @@ import remixlab.dandelion.core.*;
 import remixlab.dandelion.geom.*;
 import java.awt.Rectangle;
 
-Scene scene;
-InteractiveFrame[] iFrames;
-PImage bg;
-Vec r_world = new Vec(1000,1000,1000);
-ArrayList<Boid> flock = new ArrayList<Boid> ();
+/*Some Global variables*/
+int id = 0;//Used to check if a given Fish must be added to another group
+Scene scene;//Main scene
+InteractiveFrame[] iFrames;//Frames where vegetation is located
+PImage bg;//Background
+Vec r_world = new Vec(1000, 1000, 1000);//Size of the world
+ArrayList<Boid> flock = new ArrayList<Boid> ();//List of all boids in the scene
 /*Agents list*/
-ArrayList<Fish> agents = new ArrayList<Fish>();
-ArrayList<Fish> population = new ArrayList<Fish>();
+ArrayList<Fish> agents = new ArrayList<Fish>();//list of all groups of Fish in the scene
+ArrayList<Fish> population = new ArrayList<Fish>(); //List of all Fish in the scene (used to apply GA)
 String renderer = P3D;
 /*Vegetation using L-Systems*/
 Animation[] t_shape = new Animation[2];
 
 /*Create three kinds of Trees based on some predefined rules*/
-Animation[] createVegetation(){
+Animation[] createVegetation() {
   Animation[] t_shape = new Animation[2];
   t_shape[0] = new Animation();
   RuleSystem t1; 
-  for(int k = 0; k <3;k++){
-    t1 = new RuleSystem(20.5 + 2*k,2,"F",4, 5, 0);
-    t1.rules.add(new rule('F',"F[-/&F][-/|F][-*|F][-*&F][+/|F][+/&F][+*|F][+*&F][F]"));
+  for (int k = 0; k <3; k++) {
+    t1 = new RuleSystem(20.5 + 2*k, 2, "F", 4, 5, 0);
+    t1.rules.add(new rule('F', "F[-/&F][-/|F][-*|F][-*&F][+/|F][+/&F][+*|F][+*&F][F]"));
     //println("initial axiom: " + t1.axiom);
     t1.applyRules();  
     //println("final axiom: " + t1.axiom);
@@ -32,10 +34,10 @@ Animation[] createVegetation(){
   }
   t_shape[1] = new Animation();
   RuleSystem t2; 
-  for(int k = 0; k <3;k++){
-    t2 = new RuleSystem(18+2*k,2,"X",4, 5, 0.025);
-    t2.rules.add(new rule('X',"F[+*|X]F[-/&F][-/|X][-*|X][-*&X][+/|X][+/&X][+*&X]+*|X"));
-    t2.rules.add(new rule('F',"FF"));
+  for (int k = 0; k <3; k++) {
+    t2 = new RuleSystem(18+2*k, 2, "X", 4, 5, 0.025);
+    t2.rules.add(new rule('X', "F[+*|X]F[-/&F][-/|X][-*|X][-*&X][+/|X][+/&X][+*&X]+*|X"));
+    t2.rules.add(new rule('F', "FF"));
     //println("initial axiom: " + t1.axiom);
     t2.applyRules();  
     //println("final axiom: " + t1.axiom);
@@ -45,38 +47,47 @@ Animation[] createVegetation(){
 }
 
 /*Stablish location of some vegetation based on Trees previously created*/
-InteractiveFrame[] setupVegetation(Animation[] t_shape){
-  InteractiveFrame[] iFrames = new InteractiveFrame[17];
-  for(int i = 0; i < iFrames.length; i++){
+InteractiveFrame[] setupVegetation(Animation[] t_shape) {
+  InteractiveFrame[] iFrames = new InteractiveFrame[20];
+  for (int i = 0; i < iFrames.length; i++) {
     iFrames[i] = new InteractiveFrame(scene);
     //iFrames[i].setGrabsInputThreshold(scene.radius()/4, true);
-    iFrames[i].scale(3);
+    iFrames[i].scale(6);
   }  
-  int x_c = 100; int y_c = 100; int dif = 40;
+  int x_c = 150; 
+  int y_c = 150; 
+  int dif = 50;
   iFrames[0].translate(new Vec(x_c + dif, r_world.y(), y_c));
   iFrames[1].translate(new Vec(x_c - dif, r_world.y(), y_c));
   iFrames[2].translate(new Vec(x_c, r_world.y(), y_c + dif));
   iFrames[3].translate(new Vec(x_c, r_world.y(), y_c - dif));
-  x_c = (int) r_world.x() - 100; y_c = 100;
+  x_c = (int) r_world.x() - 150; 
+  y_c = 150;
   iFrames[4].translate(new Vec(x_c + dif, r_world.y(), y_c));
   iFrames[5].translate(new Vec(x_c - dif, r_world.y(), y_c));
   iFrames[6].translate(new Vec(x_c, r_world.y(), y_c + dif));
   iFrames[7].translate(new Vec(x_c, r_world.y(), y_c - dif));
-  x_c = 100; y_c = (int) r_world.z() - 100;
+  x_c = 150; 
+  y_c = (int) r_world.z() - 150;
   iFrames[8].translate(new Vec(x_c + dif, r_world.y(), y_c));
   iFrames[9].translate(new Vec(x_c - dif, r_world.y(), y_c));
   iFrames[10].translate(new Vec(x_c, r_world.y(), y_c + dif));
   iFrames[11].translate(new Vec(x_c, r_world.y(), y_c - dif));
-  x_c = (int) r_world.x() - 100; y_c = (int) r_world.z() - 100;
+  x_c = (int) r_world.x() - 150; 
+  y_c = (int) r_world.z() - 150;
   iFrames[12].translate(new Vec(x_c + dif, r_world.y(), y_c));
   iFrames[13].translate(new Vec(x_c - dif, r_world.y(), y_c));
   iFrames[14].translate(new Vec(x_c, r_world.y(), y_c + dif));
   iFrames[15].translate(new Vec(x_c, r_world.y(), y_c - dif));
-  iFrames[16].translate(new Vec(r_world.x()/2, r_world.y(), r_world.z()/2));
+  iFrames[16].translate(new Vec(r_world.x()/2 + dif, r_world.y(), r_world.z()/2));
+  iFrames[17].translate(new Vec(r_world.x()/2 - dif, r_world.y(), r_world.z()/2));
+  iFrames[18].translate(new Vec(r_world.x()/2, r_world.y(), r_world.z()/2 + dif));
+  iFrames[19].translate(new Vec(r_world.x()/2, r_world.y(), r_world.z()/2 - dif));
+
   return iFrames;
 }
 
-void setupScene(Scene scene){
+void setupScene(Scene scene) {
   scene.setAxesVisualHint(false);
   scene.setGridVisualHint(false);
   scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
@@ -86,7 +97,7 @@ void setupScene(Scene scene){
   scene.enableKeyboardAgent();
 }
 
-void setup(){  
+void setup() {  
   size(800, 600, renderer);
   textureWrap(REPEAT);  
   scene = new Scene(this);  
@@ -99,92 +110,71 @@ void setup(){
   //Define some scene properties
   preloadMorphology();
   setupScene(scene);
-
-  scale_factor= 0.2;    
-  createFishGroup(1);
   
-  //println("pez : " + i);
-  scale_factor= 0.1;    
-  createFishGroup(20);
-  createFishGroup(20);
-
-  scale_factor= 0.05;    
-  createFishGroup(50);
-  createFishGroup(50);
-
-  scale_factor= 0.028;    
-  createFishGroup(30);
-  createFishGroup(30);
-
+  for(int i = 0; i < 8; i++){
+    scale_factor = randomGaussian()*0.02 + 0.06;
+    createFishGroup(20);
+  }
+  
   addEnemies();
   bg = loadImage("background/1.jpeg" );
-  bg.resize(800,600);
+  bg.resize(800, 600);
   /*Enable Events when finishing setting up the environment*/
   scene.enableMouseAgent();
-  scene.enableMotionAgent();  
-  loop();  
+  scene.enableMotionAgent();   
+  loop();
 }
 
-boolean begin = false;
-int conta = 50;
-void draw(){
-  if(!pause)conta--;
-  //background(color(59,145,255));
+int boid_merge_counter = 0, idx = 0;
+int boid_merge_wait = 100;
+void draw() { 
   background(bg);
-  //ambientLight(128, 128, 128);
   directionalLight(255, 255, 255, 0, 1, -500);  
   directionalLight(255, 255, 255, 0, 1, 500);
   directionalLight(255, 255, 255, 500, 1, 0);
-  directionalLight(255, 255, 255, -500, 1, 0);
-  //directionalLight(255, 255, 255, 1, 500, 0);
-  //directionalLight(255, 255, 255, 1, -500, 0);
-
+  //directionalLight(255, 255, 255, -500, 1, 0);
   drawContainer();
   //trees
-  for(int i = 0; i < iFrames.length; i++){
+  for (int i = 0; i < iFrames.length; i++) {
     pushMatrix();
     iFrames[i].applyTransformation();//very efficient
-    //scene.drawAxes(20);
-    if(i < 15) t_shape[0].draw();
-    else t_shape[1].draw();
+      //scene.drawAxes(20);
+      t_shape[0].draw();
     popMatrix();
   } 
-  if(conta  == 0 && !pause){
-    println("entra");
-    conta = 50;
-    for(int i = 0; i < agents.size(); i++){
-      agents.get(i).run();
-    }
-    println(agents.size());
-  }
   //fish
-  for(int i = 0; i < flock.size(); i++){
-    if(!pause){ 
-    flock.get(i).run();
+  for (int i = 0; i < flock.size(); i++) {
+    if (!pause) { 
+      flock.get(i).run();
     }
     flock.get(i).render();
   }
+  if (!pause)boid_merge_counter = (boid_merge_counter + 1) % boid_merge_wait;
+  if(boid_merge_counter == boid_merge_wait - 1){
+    for(int i = 0; i < 10; i++){
+      if(idx < agents.size()/2) agents.get(idx++).run(); 
+      else idx = 0;
+    }
+  }
 }
 
-void mousePressed(){
-    Vec v = scene.eye().unprojectedCoordinatesOf(new Vec(mouseX, mouseY));
-    print("Vec : " + v);  
-}  
-
-
 //create fish group
-void createFishGroup(int num){
-  Fish a = new Fish();
+void createFishGroup(int num) {
+  Fish a = new Fish(id++);
   last_texture = applyTuringMorph(true, false, a);
   PShape fish = applyDeformation(a);
-  for(int i = 0; i < num; i++){
+  for (int i = 0; i < num; i++) {
     ArrayList<Boid> boids = new ArrayList<Boid>();
-    Fish agent = new Fish();
-    agent.c1 = a .c1; agent.c2 = a.c2;
-    agent.Da = a.Da; agent.Db = a.Db; agent.pa = a.pa; agent.pb = a.pb;
-    agent.h = a.h; agent.w = a.w; agent.l = a.l;
-    agent.base_model = a.base_model;
-    Boid b = generateBoid((int)random(0,r_world.x() - 100), (int)random(0,r_world.y() - 100), (int)random(0,r_world.z() - 100),fish);    
+    Fish agent = new Fish(id++);
+    agent.c1 = a .c1;    agent.c2 = a.c2;
+    agent.Da = a.Da;     agent.Db = a.Db; 
+    agent.pa = a.pa;     agent.pb = a.pb;
+    agent.h = a.h;       agent.w = a.w; 
+    agent.l = a.l;       agent.base_model = a.base_model;
+    float bounding_rad = a.h > a.l ? a.h : a.l;
+    bounding_rad = a.w > bounding_rad ? a.w : bounding_rad;    
+    bounding_rad = bounding_rad*1.f/2.f;
+    Boid b = generateBoid((int)random(0, r_world.x() - 100), (int)random(0, r_world.y() - 100), (int)random(0, r_world.z() - 100), fish, bounding_rad);    
     agent.boid = b;
     boids.add(b);
     flock.add(b);
@@ -195,7 +185,7 @@ void createFishGroup(int num){
   }
 }
 
-void drawContainer(){
+void drawContainer() {
   pushStyle();
   stroke(255);
   line(0, 0, 0, 0, r_world.y(), 0);
@@ -212,14 +202,15 @@ void drawContainer(){
   line(0, r_world.y(), 0, 0, r_world.y(), r_world.z());
   line(r_world.x(), 0, 0, r_world.x(), 0, r_world.z());
   line(r_world.x(), r_world.y(), 0, r_world.x(), r_world.y(), r_world.z());
-  popStyle();  
+  popStyle();
 }
 
-void addEnemies(){
-  for(Fish ag : agents){
-    for(Fish ag2 : agents){
-      if(ag == ag2) continue;
-      if(ag.h < 0.6*ag2.h || ag.w < 0.6*ag2.w || ag.l < 0.6*ag2.l){
+void addEnemies() {
+  //When a fish is more than twice times bigger another, then consider it a Prey  
+  for (Fish ag : agents) {
+    for (Fish ag2 : agents) {
+      if (ag == ag2) continue;
+      if (ag.h < 0.6*ag2.h || ag.w < 0.6*ag2.w || ag.l < 0.6*ag2.l) {
         ag.boid.predators.add(ag2.boid);
         ag2.boid.preys.add(ag.boid);
         println("Added enemy...");
@@ -229,11 +220,14 @@ void addEnemies(){
 }
 
 boolean pause = false;
-void keyPressed(){
-  if(key == ' '){
+void keyPressed() {
+  if (key == ' ') {
     pause = !pause;
   }
-  if(key == 'g'){
-    executeGA();
+  if (key == 'g') {
+    /*Lock this thread in case, any other want to access to the data*/
+    synchronized(this){
+      executeGA();
+    }
   }
 }

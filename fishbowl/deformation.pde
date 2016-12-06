@@ -59,25 +59,17 @@ PShape applyDeformation(Fish agent){
   String selected = r < 10 ? "0" + r : "" + r;
   figure = loadShape(path + selected +".obj");
   deformed_figure = loadShape(path + selected +".obj");
-  //figure = figure.getTessellation();
-  //deformed_figure = deformed_figure.getTessellation();
   vertices.clear();
   deformed_vertices.clear();  
-  //figure = figure.getTessellation();
-  //deformed_figure = deformed_figure.getTessellation();
   for(int j = 0; j < figure.getChildCount(); j++){
     PShape aux = figure.getChild(j);
     for(int i = 0; i < aux.getVertexCount(); i++){
-      //deformed_figure.setVertex(i,PVector.mult(deformed_figure.getVertex(i),100));
-      //figure.setVertex(i,PVector.mult(figure.getVertex(i),100));
       vertices.add(aux.getVertex(i));  
     }
   }
   for(int j = 0; j < deformed_figure.getChildCount(); j++){
     PShape aux = deformed_figure.getChild(j);
     for(int i = 0; i < aux.getVertexCount(); i++){
-      //deformed_figure.setVertex(i,PVector.mult(deformed_figure.getVertex(i),100));
-      //figure.setVertex(i,PVector.mult(figure.getVertex(i),100));
       deformed_vertices.add(aux.getVertex(i));  
     }
   }
@@ -121,11 +113,11 @@ PShape applyDeformation(Fish agent){
   return deformed_figure;
 }
 
-Boid generateBoid(int x, int y, int z, PShape p){
+Boid generateBoid(int x, int y, int z, PShape p, float bounding_rad){
   InteractiveFrame f = new InteractiveFrame(scene);
   f.translate(x,y,z);
-  Boid aux_fish = new Boid( new PVector(x,y,z));
-  aux_fish.f = f;
+  Boid aux_fish = new Boid( new PVector(x,y,z), bounding_rad);
+  aux_fish.frame = f;
   aux_fish.s = p;
   return aux_fish;
 }
@@ -133,14 +125,3 @@ Boid generateBoid(int x, int y, int z, PShape p){
 void morphTransformationAction(){
   combination();
 }
-
-/*
-void reflexShape(PShape s){
-  float x_max = 0;
-  for(int k = 0; k <s.getVertexCount() ; k++){
-    x_max = s.getVertex(k).x > x_max ? s.getVertex(k).x : x_max; 
-  }
-  for(int k = 0; k <s.getVertexCount() ; k++){
-    s.setVertex(k,-s.getVertex(k).x + x_max,s.getVertex(k).y);
-  }
-}*/

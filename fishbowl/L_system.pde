@@ -1,12 +1,9 @@
-//IMPORTANT CODE---------------------------------------------------------
-//-----------------------------------------------------------------------
-//-----------------------------------------------------------------------
 //L-Systems
 public class Animation{
   ArrayList<PShape> p = new ArrayList<PShape>();
   int cur = 0;
   int cont = 0;
-  int delay = 100;
+  int delay = 300;
   void next(){
     if(cont == delay){
       if(cur < p.size() -1) cur++;

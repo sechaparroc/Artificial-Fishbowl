@@ -1,8 +1,6 @@
 //Based on [Schaefer] : Image Deformation Using Moving Least Squares
-int step_per_point = 10;
-
-//Based on [Schaefer] : Image Deformation Using Moving Least Squares
 //First Approach: Affine Transformations
+int step_per_point = 10;
 float mod_factor = 8.;
 
 double[][] A;
@@ -75,33 +73,6 @@ void getA(ArrayList<PVector> img, ArrayList<PVector> control){
 
 ArrayList<PVector> calculateNewImage(ArrayList<PVector> img, ArrayList<PVector> out_control){
   if(out_control.size() < 4) return img;
-  //testingpurposes
-  int num_id = 0;
-  int num_no_id = 0;
-  int same = 0;
-  //println("begincontrol");
-  //print("[");
-  for(int i = 0; i < control_points.size(); i++){
-    //print(control_points.get(i) + ", ");  
-    if(control_points.get(i).x == control_points_out.get(i).x &&
-        control_points.get(i).y == control_points_out.get(i).y && 
-        control_points.get(i).z == control_points_out.get(i).z){
-          same++;
-        }
-  }
-  //print("]");
-  //println("endcontrol");
-  //println("begincontrolout");
-  //print("[");
-  /*for(int i = 0; i < control_points.size(); i++){
-    print(control_points_out.get(i) + ", ");  
-  }
-  print("]");
-  println("endcontrolout");
-  println("same : " + same);
-  println("total : " + control_points.size());*/
-  //---------------
-
   
   ArrayList<PVector> dest = new ArrayList<PVector>();
   int counter = 0;
@@ -126,22 +97,9 @@ ArrayList<PVector> calculateNewImage(ArrayList<PVector> img, ArrayList<PVector> 
         sum_A_q_j.z += A[counter][j]*q_hat_j.z;  
     }
     PVector f_a_v = PVector.add(sum_A_q_j, q_star);
-    //testingpurposes
-    if(abs(v.x - f_a_v.x) < 0.0001 &&
-        abs(v.y - f_a_v.y) < 0.0001  && 
-        abs(v.z - f_a_v.z) < 0.0001 ){
-          num_id++;
-    }else{
-      num_no_id++;
-    }
-    
     dest.add(f_a_v);
     counter++;
   }
-  //testingpurposes
-  //println("id : " + num_id);
-  //println("no id : " + num_no_id);
-  //---
   return dest;
 }
 

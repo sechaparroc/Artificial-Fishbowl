@@ -1,3 +1,4 @@
+//Splines curves used to locate control points
 ArrayList<PVector> curve_cardinal;
 
 ArrayList<PVector> drawCardinalSpline( float tension, PVector k0, PVector k1, PVector k2, PVector k3, float e){
@@ -20,8 +21,6 @@ ArrayList<PVector> drawCardinalSpline( float tension, PVector k0, PVector k1, PV
               k2.z * ((s-2)*u3 + (3-2*s)*u2 + s*u) +
               k3.z * (s*u3 - s*u2);
    curve.add(new PVector(x,y,z));
-   //curve.vertex(x,y,z);
-   //println("x : " + x  + " y : " + y + " z : " + z);
   }
   float u = 1, u2 = 1, u3 = 1; 
   float x = k0.x * (-s*u3 + 2*s*u2 -s*u) +
@@ -37,15 +36,12 @@ ArrayList<PVector> drawCardinalSpline( float tension, PVector k0, PVector k1, PV
             k2.z * ((s-2)*u3 + (3-2*s)*u2 + s*u) +
             k3.z * (s*u3 - s*u2);
   curve.add(new PVector(x,y,z));
-  //curve.vertex(x,y,z);
-  //println("x : " + x  + " y : " + y + " z : " + z);
   return curve;
 }
 
 ArrayList<PVector> drawCurve(ArrayList<PVector> points, float tension, float e, boolean closed){
     if(points.size() < 4) return null;
     ArrayList<PVector> curve_card = new ArrayList<PVector>();
-    //p.translate(points.get(0).x,points.get(0).y,points.get(0).z);
     int i = 1;
     for(;i < points.size() - 2; i++){
       curve_card.addAll(drawCardinalSpline(tension, points.get(i-1), points.get(i), points.get(i + 1), points.get(i + 2), e));
@@ -56,7 +52,5 @@ ArrayList<PVector> drawCurve(ArrayList<PVector> points, float tension, float e, 
       curve_card.addAll( drawCardinalSpline(tension, points.get(points.size()-1), points.get(0), points.get(1), points.get(2), e));
       curve_card.addAll( drawCardinalSpline(tension, points.get(0), points.get(1), points.get(2), points.get(3), e));
     }
-    //curve_card.addChild(p);
-    //curve_cardinal.set(curve_cardinal.size()-1, curve_card);    
     return curve_card;
 }

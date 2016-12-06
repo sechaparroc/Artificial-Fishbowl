@@ -1,13 +1,13 @@
 //Used for Fish textures
-//Taken from http://www.cgjennings.ca/toybox/turingmorph/TuringMorph.java
+//Adapted from http://www.cgjennings.ca/toybox/turingmorph/TuringMorph.java
 double Da = random(3);//Diffusion of activator
 double Db = Da + Da/10 + Da*random(2,6)*randomGaussian();//Diffusion of inhibitor
 double pa;//decay rate of a
 double pb;//decay rate of b
 
-int iterations = 1500;
+int iterations = 700;
 int counter = 0;
-int dim = 200;
+int dim = 32;
 double[][] a;
 double[][] b;
 double[][] a_next;
@@ -54,7 +54,7 @@ void setupTuring(boolean predefined, boolean defined, Fish agent){
       b[i][j] = random((float) pa);  
     }
   }  
-  //REQUIRED FOR AGENT HAPPINESS
+  //REQUIRED FOR AGENT HAPPINESS FUNCTION
   max_Da = max_Da > Da ? max_Da : (float)Da;
   max_Db = max_Db > Db ? max_Db : (float)Db;
   max_pa = max_pa > pa ? max_pa : (float)pa;
