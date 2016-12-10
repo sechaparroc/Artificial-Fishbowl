@@ -27,13 +27,10 @@ public void  executeGA(){
     }
     agents.clear();
     for(i = 0; i < population.size(); i++){   
-      println("ITERATION : " + i);
 
       //select 2 agents 
       int i1 = roulette(fitness);
       int i2 = roulette(fitness);      
-      println("PARENT 1 : " + i1);
-      println("PARENT 2 : " + i2);
 
       Fish parent_a = population.get(i1);
       Fish parent_b = population.get(i2);
@@ -50,7 +47,6 @@ public void  executeGA(){
     population.clear();
     for(Fish p : new_population) population.add(p);
   }
-  print("NOW UPDATING " + new_population.length);
   updateGA();
 }
 
@@ -118,21 +114,16 @@ public Fish mutation(Fish fi){
 void updateGA(){
   //actualize turing morph and parameters to render the agents
   flock.clear();
-  print("Flock " + agents.size());
   for(Fish f : agents){    
     last_texture = execute(true, true, f);        
-    print("SALE 2");
     f.boid.s = updateShape(f);
     float bounding_rad = f.h > f.l ? f.h : f.l;
     bounding_rad = f.w > bounding_rad ? f.w : bounding_rad;    
     bounding_rad = bounding_rad*1.f/2.f;    
     f.boid = generateBoid((int)random(0,r_world.x() - 100), (int)random(0,r_world.y() - 100), (int)random(0,r_world.z() - 100),f.boid.s, f);
-    print("SALE 3");    
     f.boid.boids = new ArrayList<Boid>();
     f.boid.boids.add(f.boid);
     flock.add(f.boid);
     f.updateVision();
-    print("SALE 1");
-}
-  print("SALE");
+  }
 }

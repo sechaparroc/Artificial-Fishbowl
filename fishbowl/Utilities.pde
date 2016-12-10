@@ -197,8 +197,7 @@ public void fillWithColor(InteractiveFrame f, PShape p, color c){
 //UTIL ALGORITHMS--------------------------------
 ArrayList<PVector> quickSort(ArrayList<PVector> list, PVector comp, int size){
   if(size < 2) return list;
-  Random rand = new Random();
-  int pivot = rand.nextInt(size);
+  int pivot = int(random(size));
   int p1 = 0,p2 = 0;
   ArrayList<PVector>list1 = new ArrayList<PVector>();
   ArrayList<PVector>list2 = new ArrayList<PVector>();  
@@ -323,4 +322,25 @@ public float getColorDifference(int a, int b) {
     int[] lab1 = rgb2lab(r1, g1, b1);
     int[] lab2 = rgb2lab(r2, g2, b2);
     return (float) sqrt(pow(lab2[0] - lab1[0], 2) + pow(lab2[1] - lab1[1], 2) + pow(lab2[2] - lab1[2], 2));
+}
+
+/*Convert from HSB to RGB*/
+public color hsvToRgb(float hue, float saturation, float value) {
+
+    int h = (int)(hue * 6);
+    float f = hue * 6 - h;
+    float p = value * (1 - saturation);
+    float q = value * (1 - f * saturation);
+    float t = value * (1 - (1 - f) * saturation);
+
+    switch (h) {
+      case 0: return color(value*255  , t*255      , p*255);
+      case 1: return color(q*255      , value*255  , p*255);
+      case 2: return color(p*255      , value*255  , t*255);
+      case 3: return color(p*255      , q*255      , value*255);
+      case 4: return color(t*255      , p*255      , value*255);
+      case 5: return color(value*255  , p*255      , q*255);
+      case 6: return color(value*255  , p*255      , q*255);
+      default: throw new RuntimeException("Something went wrong when converting from HSV to RGB. Input was " + hue + ", " + saturation + ", " + value);
+    }
 }

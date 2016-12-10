@@ -12,5 +12,5 @@ newmtl 13___Default
 	Kd 0.5882 0.5882 0.5882
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka J:\my projects\tropicalfish\TropicalFish13.jpg
-	map_Kd J:\my projects\tropicalfish\TropicalFish13.jpg
+	map_Ka TropicalFish13.jpg
+	map_Kd TropicalFish13.jpg

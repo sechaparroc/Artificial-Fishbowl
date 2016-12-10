@@ -142,17 +142,17 @@ void getColors(){
   float hue = (float) Math.random();
   float sat = (float) Math.random();
   float bri = (float) Math.random() * 0.667f;
-  Color min = new Color( Color.HSBtoRGB( hue, sat, bri ) );
+  color min = hsvToRgb( hue, sat, bri );
   hue += (float) Math.random() * 26f / 180f;
   bri = 0.75f + (float) Math.random() / 4f;
-  Color max = new Color( Color.HSBtoRGB( hue, sat, bri ) );
+  color max = hsvToRgb( hue, sat, bri );
   if( Math.random() >= 0.5f ) {
-    Color temp = min;
+    color temp = min;
     min = max;
     max = temp;
   }
-  inhibitor = color(min.getRed(), min.getGreen(),min.getBlue());
-  activator = color(max.getRed(), max.getGreen(),max.getBlue());
+  inhibitor = min;
+  activator = max;
 }
 
 color linearInterpolation(double number){

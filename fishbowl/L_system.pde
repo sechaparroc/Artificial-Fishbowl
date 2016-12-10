@@ -94,14 +94,12 @@ public class RuleSystem{
         new_axiom = new_axiom + applyRule(cur);    
       }
       axiom = new_axiom;
-      println("iteration number : " + k);
     }
   }
   
   String applyRule(char c){
-    Random ran = new Random();
     ArrayList<rule> possibles = new ArrayList<rule>(); 
-    float rand_f = ran.nextFloat();
+    float rand_f = random(1);
     for(rule r : rules){
       if(r.id == c){
         possibles.add(r);
@@ -117,13 +115,12 @@ public class RuleSystem{
 
   PShape getShape(){
     PShape tree = createShape(GROUP);
-    Random ran = new Random();
     ArrayList<Position> stack_pos = new ArrayList<Position>(); 
     float sz = this.size;
     float[] orientation = {0, 0, 0};
     float[] dir = {0, -1, 0};    
-    float var  = ran.nextFloat()*size_range;
-    float cur_size = ran.nextFloat() > 0.5 ? sz + var : sz - var; 
+    float var  = random(1)*size_range;
+    float cur_size = random(1) > 0.5 ? sz + var : sz - var; 
     float[] pos = {0,0,0};
     int[] col; int[] col_1 = {245,137,5}; int[] col_2 = {242,250,20};
     col = col_1;
@@ -131,8 +128,8 @@ public class RuleSystem{
       char c = axiom.charAt(i);
       if(c == 'F'){
         PShape line;
-        var  = ran.nextFloat()*size_range;
-        cur_size = ran.nextFloat() > 0.5 ? sz + var : sz - var; 
+        var  = random(1)*size_range;
+        cur_size = random(1) > 0.5 ? sz + var : sz - var; 
         float[] n_pos = {dir[0], dir[1], dir[2]};
         //rot with x
         n_pos = rotX(n_pos, orientation[0]);
@@ -166,34 +163,34 @@ public class RuleSystem{
         sz--;
       }
       if(c == '+'){
-        var  = ran.nextFloat()*angle_range;
+        var  = random(1)*angle_range;
         orientation[0] += angle;  
-        orientation[0] = ran.nextFloat() > 0.5 ? orientation[0] + var : orientation[0] - var; 
+        orientation[0] = random(1) > 0.5 ? orientation[0] + var : orientation[0] - var; 
       }
       if(c == '-'){
-        var  = ran.nextFloat()*angle_range;
+        var  = random(1)*angle_range;
         orientation[0] += 360 - angle;  
-        orientation[0] = ran.nextFloat() > 0.5 ? orientation[0] + var : orientation[0] - var; 
+        orientation[0] = random(1) > 0.5 ? orientation[0] + var : orientation[0] - var; 
       }
       if(c == '*'){
-        var  = ran.nextFloat()*angle_range;
+        var  = random(1)*angle_range;
         orientation[1] += angle;  
-        orientation[1] = ran.nextFloat() > 0.5 ? orientation[1] + var : orientation[1] - var; 
+        orientation[1] = random(1) > 0.5 ? orientation[1] + var : orientation[1] - var; 
       }
       if(c == '/'){
-        var  = ran.nextFloat()*angle_range;
+        var  = random(1)*angle_range;
         orientation[1] += 360 - angle;  
-        orientation[1] = ran.nextFloat() > 0.5 ? orientation[1] + var : orientation[1] - var; 
+        orientation[1] = random(1) > 0.5 ? orientation[1] + var : orientation[1] - var; 
       }
       if(c == '&'){
-        var  = ran.nextFloat()*angle_range;
+        var  = random(1)*angle_range;
         orientation[2] += angle;  
-        orientation[2] = ran.nextFloat() > 0.5 ? orientation[2] + var : orientation[2] - var; 
+        orientation[2] = random(1) > 0.5 ? orientation[2] + var : orientation[2] - var; 
       }
       if(c == '|'){
-        var  = ran.nextFloat()*angle_range;
+        var  = random(1)*angle_range;
         orientation[2] += 360 - angle;  
-        orientation[2] = ran.nextFloat() > 0.5 ? orientation[2] + var : orientation[2] - var; 
+        orientation[2] = random(1) > 0.5 ? orientation[2] + var : orientation[2] - var; 
       }
      
       if(c == '['){
