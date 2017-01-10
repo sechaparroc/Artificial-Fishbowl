@@ -5,9 +5,9 @@ Vec[][] original_box;
 Vec[][] deformed_box;
 
 //draw a rect bound
-public void drawCube(InteractiveFrame m){
+public void drawCube(InteractiveFrame m, PShape p){
   //set translation, rotation
-  Vec[][] cub = getFaces(m);
+  Vec[][] cub = getFaces(m, p);
   pushStyle();
   stroke(color(255,0,0));
   fill(color(255,0,0,5));
@@ -52,8 +52,8 @@ public Vec[] getCube(PShape shape) {
   return v;
 }
 
-public Vec[][] getFaces(InteractiveFrame m){
-  Vec[] cub = getCube(m.shape());
+public Vec[][] getFaces(InteractiveFrame m, PShape p){
+  Vec[] cub = getCube(p);
   Vec[][] faces = new Vec[6][4];
   faces[0][0] = m.inverseCoordinatesOf(new Vec(cub[0].x(), cub[0].y(), cub[0].z()));
   faces[0][1] = m.inverseCoordinatesOf(new Vec(cub[1].x(), cub[0].y(), cub[0].z()));
